@@ -1,0 +1,72 @@
+{
+    "classification": [{
+            "classification_q_id": "552",
+            "title": "Class ificaion Question1",
+            "drag_box_1_title": "Paid Media",
+            "drag_box_2_title": "Others",
+            "drag_column": [{
+                    "keyword": "Paid Media 1",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Paod Media 2",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Other 1",
+                    "KeywordBelongsTo": "box_2"
+                },
+                {
+                    "keyword": "Paid Media 3",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Other 2",
+                    "KeywordBelongsTo": "box_2"
+                }
+            ],
+            "how_it_works": "Lorem Ipsum ...",
+            "answer_description": "Lorem Ipsum --"
+        },
+        {
+            "classification_q_id": "560",
+            "title": "Classification Question 2",
+            "drag_box_1_title": "Box 1",
+            "drag_box_2_title": "Box 2",
+            "drag_column": [{
+                    "keyword": "Keyword box 1",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Keyword Bo2",
+                    "KeywordBelongsTo": "box_2"
+                },
+                {
+                    "keyword": "Keywrd Box 1",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Keword 111",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Keyword 222",
+                    "KeywordBelongsTo": "box_2"
+                }, {
+                    "keyword": "Other 1354544",
+                    "KeywordBelongsTo": "box_2"
+                },
+                {
+                    "keyword": "Paid Media 344424422442",
+                    "KeywordBelongsTo": "box_1"
+                },
+                {
+                    "keyword": "Other 24244424",
+                    "KeywordBelongsTo": "box_2"
+                }
+            ],
+            "how_it_works": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer",
+            "answer_description": "aaaas ddsdssd dsfdsf d fdsf "
+        }
+    ]
+}
