@@ -17,6 +17,7 @@
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^2.2.0",
+        "rollup-obfuscator": "^2.0.0",
         "vite": "^2.8.0"
     }
 }

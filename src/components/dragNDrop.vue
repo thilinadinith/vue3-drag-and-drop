@@ -1,5 +1,5 @@
 <template>
-<div class="drag-n-drop">
+<div class="drag-n-drop" v-if="!isMobile()">
     <div class="main-selection">
         <draggable
         class="list-group"
@@ -13,8 +13,10 @@
           <div class="list-group-item">{{ element.keyword }} </div>
         </template>
       </draggable>
-      <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+         <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
     </div>
+ 
+
     <div class="question-sections">
         <div class="question-section-item">
             <h3>Draggable 1</h3>
@@ -44,7 +46,7 @@
         :disabled=drag
         itemKey="name">
         <template #item="{ element, index }">
-          <div class="list-group-item">{{ element.keyword }} <i  @click="deleteRightList(element)" class="fa fa-close"></i> </div>
+          <div class="list-group-item">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="fa fa-close"></i> </div>
         </template>
       </draggable>
     </div>
@@ -57,7 +59,42 @@ npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-w
         </div>
       
 </div>
-
+<div class="drag-n-drop" v-if="isMobile()">
+    <div class="main-selection">
+      <div class="list-group">
+        <div class="" v-for="element in mainList" :key="element.keyword">
+          <div class="list-group-item" @click="selectItem(element)">{{ element.keyword }} </div>
+      </div>
+    </div>
+      <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+    </div>
+    <div class="question-sections" >
+        <div class="mobile-question-item">
+            <div class="title-mobile"> this is left list <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
+            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
+            <div class="list-group" v-show="leftList.length>0 && leftToggle">
+                <div  v-for="element in leftList" :key="element.keyword" >
+                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="fa fa-close"></i></div>
+                </div>
+            </div>
+            <div  class="list-group" v-show="leftList.length==0 && leftToggle" >
+                    <div class="empty-message">click and drop here</div>
+            </div>
+        </div>
+        <div class="mobile-question-item">
+            <div class="title-mobile"> this is left list <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
+            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
+            <div class="list-group" v-show="rightList.length>0 && leftToggle">
+                <div  v-for="element in rightList" :key="element.keyword" >
+                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="fa fa-close"></i></div>
+                </div>
+            </div>
+            <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
+                    <div class="empty-message">click and drop here</div>
+            </div>
+        </div>
+    </div>
+</div>
 </template>
 <script>
 import draggable from 'vuedraggable'
@@ -73,10 +110,13 @@ export default {
   data() {
     return {
         count: 0,
+        selectedItems :[],
         drag: false,
         mainList: this.findReleventClassification(560),
         leftList: [],
         rightList:[],
+        leftToggle: false,
+        rightToggle: false,
         totalItemSize : this.originalMainListSize(560),
         validate :false
        
@@ -85,6 +125,7 @@ export default {
     }
   },
   computed:{
+      
        itemsAvaiable () {
           return this.mainList.length
        } ,
@@ -100,41 +141,69 @@ export default {
   // Methods are functions that mutate state and trigger updates.
   // They can be bound as event listeners in templates.
   methods: {
-    findReleventClassification(id){
+    toggleLeft(){
+        this.leftToggle = !this.leftToggle
+    },
+    toggleRight(){
+        this.rightToggle = !this.rightToggle
+    },
+    selectItem(element){
+        this.leftToggle = false
+        this.rightToggle = false
+        if(!this.selectedItems.some( el=>  el.keyword==element.keyword))  
+        this.selectedItems.push(element);
+    },
+    addItemsLeft(){
+        this.selectedItems.forEach(el => {
+            this.leftList.push(el);
+            this.mainList = this.mainList.filter(ele => ele.keyword !=el.keyword)
+        })
+        this.leftToggle = true;
+        this.rightToggle = true;
+        this.selectedItems = [];
+    },
+    addItemsRight(){
+        this.selectedItems.forEach(el => {
+            this.rightList.push(el);
+            this.mainList = this.mainList.filter(ele => ele.keyword !=el.keyword)
+        })
+        this.selectedItems = [];
+    },
+    isMobile() {return  window.innerWidth <= 760 },
+    findReleventClassification(id) {
         return this.getData(id)
     },
-    submit(){
-        debugger
+    submit() {
         this.leftList.forEach(element => {
-            if(element.KeywordBelongsTo !='box_1'){
-                element.error =true;
-            }            
+            if (element.KeywordBelongsTo != 'box_1') {
+                element.error = true;
+            }
         });
         this.rightList.forEach(element => {
-            if(element.KeywordBelongsTo !='box_2'){
-                element.error =true;
-            }            
+            if (element.KeywordBelongsTo != 'box_2') {
+                element.error = true;
+            }
         });
-        this.validate=true;
-        this.drag=true;
+        this.validate = true;
+        this.drag = true;
 
     },
-    originalMainListSize(id){
+    originalMainListSize(id) {
         return this.getData(id).length;
     },
-    getData(id){
-        return dataJson.classification.find(element => { return element.classification_q_id == id}).drag_column
+    getData(id) {
+        return dataJson.classification.find(element => { return element.classification_q_id == id }).drag_column
     },
     increment() {
-      this.count++
+        this.count++
     },
-    deleteRightList(element){
+    deleteRightList(element) {
         this.rightList = this.deleteItem(this.rightList, element)
     },
-    deleteLeftList(element){
-          this.leftList = this.deleteItem(this.leftList, element)
+    deleteLeftList(element) {
+        this.leftList = this.deleteItem(this.leftList, element)
     },
-    deleteItem(list, element){
+    deleteItem(list, element) {
         this.mainList.unshift(element);
         return list.filter(el => el.keyword != element.keyword)
     }
@@ -144,19 +213,22 @@ export default {
   // of a component's lifecycle.
   // This function will be called when the component is mounted.
   mounted() {
-    console.log(`The initial count is ${this.count}.`)
+    console.log(`The initial count is ${this.count}.`);
   }
 }
 </script>
 
 <style lang="scss">
+
 .drag-n-drop{
     .main-selection{
         .count{
             float: right;
         }
         .list-group{
+
             display: flex;
+            flex-wrap: wrap;
             background: rgb(38, 38, 133);
             padding: 20px;
             .list-group-item{
@@ -166,6 +238,7 @@ export default {
                 font-weight: bold;
                 background: white;
             }
+           
         }
        
     }
@@ -173,7 +246,6 @@ export default {
         margin-top: 30px;
         display: flex;
         // flex-direction: row;
-       
         .question-section-item{
             flex: 1;
             .list-group{
@@ -197,6 +269,7 @@ export default {
               background-color:darkred;
               color: white;
             }
+           
         }
         }
         .question-section-item:first-child {
@@ -250,5 +323,61 @@ export default {
                 
     }
 }
+@media only screen and (max-width: 600px) {
+.drag-n-drop{
+    margin: 10px;
+    main-selection{
 
+    }
+}
+.question-sections{
+    display: block !important;
+    .mobile-question-item{
+            margin-bottom: 30px;
+            .title-mobile{
+                border-style: solid;
+                border-width: 0.5px;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: left;
+                font-weight: bold;
+                i {
+                    float: right;
+                }
+            }
+            .add-button{
+                border-style: dashed;
+                padding: 10px;
+                border-radius: 10px;
+                border-color: #3954a7;
+            }
+            .list-group{
+                        display: flex;
+                        flex-wrap:wrap;
+                        background: lightgray;
+                        align-content: flex-start;
+                        min-height: 100px;
+                        border-radius: 10px;
+                        padding: 20px;
+                    .list-group-item{
+                        padding: 10px;
+                        border-radius: 10px;
+                        margin: 5px;
+                        height: fit-content;
+                        font-weight: bold;
+                        background: white;
+
+                    }
+                    .empty-message{
+                        text-align: center;
+                        margin: auto;
+                        margin-top: 20px;
+                    }
+            }
+
+    }
+ 
+}
+
+}
 </style>
