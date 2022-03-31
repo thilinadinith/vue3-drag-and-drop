@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import pkg from './package.json'
+const { resolve } = require('path')
 import { obfuscator } from 'rollup-obfuscator';
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,13 +20,15 @@ export default defineConfig({
                     identifierNamesGenerator: 'hexadecimal'
                 })
             ],
-            input: 'src/main.js',
             output: {
-                inlineDynamicImports: true,
-                file: pkg.main,
-                dir: undefined,
+                inlineDynamicImports: false,
+                // file: pkg.main,
+
+                dir: 'dist',
                 manualChunks: false,
-                assetFileNames: "assets/[name].[ext]",
+                entryFileNames: `assets/[name].js`,
+                chunkFileNames: `assets/[name].js`,
+                assetFileNames: `assets/[name].[ext]`
             }
         }
     }

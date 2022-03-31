@@ -63,7 +63,7 @@ npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-w
     <div class="main-selection">
       <div class="list-group">
         <div class="" v-for="element in mainList" :key="element.keyword">
-          <div class="list-group-item" @click="selectItem(element)">{{ element.keyword }} </div>
+          <div class="list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>
       </div>
     </div>
       <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
@@ -99,7 +99,8 @@ npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-w
 <script>
 import draggable from 'vuedraggable'
 import dataJson from '../../data.json'
-
+import questionDataApi from '../services/QuestionsDataAPI'
+const questionId = document.querySelector("#question-id").value;
 export default {
     components: {
             draggable,
@@ -112,13 +113,14 @@ export default {
         count: 0,
         selectedItems :[],
         drag: false,
-        mainList: this.findReleventClassification(560),
+        mainList: [],
         leftList: [],
         rightList:[],
         leftToggle: false,
         rightToggle: false,
-        totalItemSize : this.originalMainListSize(560),
-        validate :false
+        totalItemSize :0,
+        validate :false,
+        rawData :{}
        
 
         
@@ -148,10 +150,16 @@ export default {
         this.rightToggle = !this.rightToggle
     },
     selectItem(element){
+        element.selected = !element.selected;
         this.leftToggle = false
         this.rightToggle = false
         if(!this.selectedItems.some( el=>  el.keyword==element.keyword))  
-        this.selectedItems.push(element);
+        {
+             this.selectedItems.push(element);
+        }else{
+           this.selectedItems= this.selectedItems.filter(ele => ele.keyword !=element.keyword)
+        }
+       
     },
     addItemsLeft(){
         this.selectedItems.forEach(el => {
@@ -189,10 +197,10 @@ export default {
 
     },
     originalMainListSize(id) {
-        return this.getData(id).length;
+        return this.mainList.length;
     },
     getData(id) {
-        return dataJson.classification.find(element => { return element.classification_q_id == id }).drag_column
+        return this.rawData.classification.find(element => { return element.classification_q_id == id }).drag_column
     },
     increment() {
         this.count++
@@ -209,11 +217,18 @@ export default {
     }
   },
 
-  // Lifecycle hooks are called at different stages
-  // of a component's lifecycle.
-  // This function will be called when the component is mounted.
   mounted() {
-    console.log(`The initial count is ${this.count}.`);
+          questionDataApi.getData('', res => {
+            if(res.status ==200){
+            this.rawData = res.data;
+            this.mainList= this.findReleventClassification(questionId);
+            this.totalItemSize = this.originalMainListSize(questionId);
+            }
+        
+          },  res => {
+            console.log('error in get API', res)
+          })
+
   }
 }
 </script>
@@ -231,6 +246,9 @@ export default {
             flex-wrap: wrap;
             background: rgb(38, 38, 133);
             padding: 20px;
+            .selected{
+                background-color: rgb(39, 199, 252) !important;
+            }
             .list-group-item{
                 padding: 10px;
                 border-radius: 10px;

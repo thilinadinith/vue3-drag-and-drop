@@ -9,6 +9,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "axios": "^0.26.1",
         "font-awesome": "^4.7.0",
         "sass": "^1.49.9",
         "sortablejs": "^1.15.0",

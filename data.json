@@ -54,18 +54,19 @@
                     "KeywordBelongsTo": "box_2"
                 }, {
                     "keyword": "Other 1354544",
-                    "KeywordBelongsTo": "box_2"
+                    "KeywordBelongsTo": "box_2",
+                    "valid": true
                 },
                 {
                     "keyword": "Paid Media 344424422442",
-                    "KeywordBelongsTo": "box_1"
+                    "KeywordBelongsTo": "box_1",
+                    "status": "valid"
                 },
                 {
                     "keyword": "Other 24244424",
                     "KeywordBelongsTo": "box_2"
                 }
             ],
-            "how_it_works": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer",
             "answer_description": "aaaas ddsdssd dsfdsf d fdsf "
         }
     ]
