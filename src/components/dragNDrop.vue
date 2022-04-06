@@ -58,9 +58,8 @@
   </div>
     <div class="answer-section">
             <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'"> {{answerTitle}} </div>
-            <div v-if="validate" class="answer-description"> SKIPPING OPTIONAL DEPENDENCY: esbuild-windows-64@0.14.27 (node_modules/esbuild-windows-64):
-npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-windows-64@0.14.27: wanted {"os":"win32","arch":"x64"} (current: {"os":"darwin","arch":"x64"})</div>
-          <div><a  class="continuebtn" @click="submit()"> Continue</a></div>
+            <div v-if="validate" class="answer-description">{{answerDescription}}</div>
+          <div><a  class="continuebtn" @click="submit()" v-if="!validate"> Check Answer</a></div>
         </div>
       
 </div>
@@ -106,6 +105,8 @@ import draggable from 'vuedraggable'
 import dataJson from '../../data.json'
 import questionDataApi from '../services/QuestionsDataAPI'
 const questionId = document.querySelector("#question-id").value;
+const nextQuestionId = document.querySelector("#nextqid").value;
+
 export default {
     components: {
             draggable,
@@ -126,7 +127,8 @@ export default {
         dragging:false,
         dragBoxOneTitle :"",
         dragBOxTwoTitle : '',
-        title :""
+        title :"",
+        answerDescription:""
        
 
         
@@ -215,6 +217,11 @@ export default {
             console.log(res.data);
             this.leftList = res.data.drag_column_box_1;
             this.rightList = res.data.drag_column_box_2;
+            this.answerDescription = res.data.answer_description;
+            if(nextQuestionId>0) 
+            document.querySelector("#next-wrap").classList.remove("d-none");
+
+
             this.validate =true
             this.drag = true;
             }
