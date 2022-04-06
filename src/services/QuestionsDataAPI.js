@@ -3,7 +3,7 @@ import api from '.'
 
 export default {
     getData(payload, cb, errorCb) {
-        let url = api.root + api.getData
+        let url = api.getData
 
         axios
             .get(url)
@@ -20,7 +20,7 @@ export default {
     postData(payload, cb, errorCb) {
         // let query = ''
 
-        let url = api.root + api.postData
+        let url = api.postData
 
         axios
             .post(url, payload)

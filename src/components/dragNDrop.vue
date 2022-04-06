@@ -1,11 +1,14 @@
 <template>
 <div class="drag-n-drop" v-if="!isMobile()">
+    <div></div>
     <div class="main-selection">
         <draggable
         class="list-group"
         :list="mainList"
         group="answers"
+        :move="checkMove"
         @change="log"
+        @end="onEnd"
         :disabled="drag"
         itemKey="keyword"
       >
@@ -19,9 +22,10 @@
 
     <div class="question-sections">
         <div class="question-section-item">
-            <h3>Draggable 1</h3>
+            <h4>{{dragBoxOneTitle}}<span v-if="leftList.length>0">({{leftList.length}})</span></h4>
             <draggable
                 class="list-group"
+                :class="dragging?'list-group-drag':''"
                 :list="leftList"
                 @change="log"
                 group="answers"
@@ -30,15 +34,16 @@
                 @end="drag"
             >
                 <template #item="{ element, index }">
-                <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="fa fa-close"></i></div>
+                <div :class="! element.validity ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </template>
             </draggable>
         </div>
 
     <div class="question-section-item">
-      <h3>Draggable 2</h3>
+      <h4>{{dragBoxTwoTitle}}<span v-if="rightList.length>0">({{rightList.length}})</span> </h4>
       <draggable
         class="list-group"
+        :class="dragging?'list-group-drag':''"
         :list="rightList"
         group="answers"
         @change="log"
@@ -46,7 +51,7 @@
         :disabled=drag
         itemKey="name">
         <template #item="{ element, index }">
-          <div class="list-group-item">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="fa fa-close"></i> </div>
+          <div  :class="! element.validity ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
         </template>
       </draggable>
     </div>
@@ -74,7 +79,7 @@ npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-w
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
-                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="fa fa-close"></i></div>
+                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="leftList.length==0 && leftToggle" >
@@ -86,7 +91,7 @@ npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for esbuild-w
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="rightList.length>0 && leftToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
-                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="fa fa-close"></i></div>
+                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
@@ -105,9 +110,6 @@ export default {
     components: {
             draggable,
         },
-  // Properties returned from data() becomes reactive state
-  // and will be exposed on `this`.
-
   data() {
     return {
         count: 0,
@@ -120,7 +122,11 @@ export default {
         rightToggle: false,
         totalItemSize :0,
         validate :false,
-        rawData :{}
+        rawData :{},
+        dragging:false,
+        dragBoxOneTitle :"",
+        dragBOxTwoTitle : '',
+        title :""
        
 
         
@@ -139,10 +145,13 @@ export default {
         }
   },
 
-
-  // Methods are functions that mutate state and trigger updates.
-  // They can be bound as event listeners in templates.
   methods: {
+    checkMove(){
+        this.dragging =true;
+    },
+    onEnd(){
+        this.dragging =false;
+    },
     toggleLeft(){
         this.leftToggle = !this.leftToggle
     },
@@ -183,24 +192,46 @@ export default {
     },
     submit() {
         this.leftList.forEach(element => {
-            if (element.KeywordBelongsTo != 'box_1') {
-                element.error = true;
-            }
+            element.KeywordBelongsTo = 'box_1'
+            // if (element.KeywordBelongsTo != 'box_1') {
+            //     element.error = true;
+            // }
         });
         this.rightList.forEach(element => {
-            if (element.KeywordBelongsTo != 'box_2') {
-                element.error = true;
-            }
+            // if (element.KeywordBelongsTo != 'box_2') {
+            //     element.error = true;
+            // }
+
+            element.KeywordBelongsTo = 'box_2'
         });
-        this.validate = true;
-        this.drag = true;
+        let payload ={};
+        payload.classification_q_id =questionId;
+        payload.drag_column_box_1 = this.leftList
+        payload.drag_column_box_2 = this.rightList
+
+
+        questionDataApi.postData(payload, res => {
+            if(res.status ==200){
+            console.log(res.data);
+            this.leftList = res.data.drag_column_box_1;
+            this.rightList = res.data.drag_column_box_2;
+            this.validate =true
+            this.drag = true;
+            }
+        
+          },  res => {
+            console.log('error in get API', res)
+          })
+
+
+        
 
     },
     originalMainListSize(id) {
         return this.mainList.length;
     },
     getData(id) {
-        return this.rawData.classification.find(element => { return element.classification_q_id == id }).drag_column
+        return this.rawData.classification.find(element => { return element.classification_q_id == id });
     },
     increment() {
         this.count++
@@ -221,7 +252,12 @@ export default {
           questionDataApi.getData('', res => {
             if(res.status ==200){
             this.rawData = res.data;
-            this.mainList= this.findReleventClassification(questionId);
+            let dataSet = this.findReleventClassification(questionId);
+            this.mainList= dataSet.drag_column;
+            this.dragBoxOneTitle =dataSet.drag_box_1_title;
+            this.dragBoxTwoTitle =dataSet.drag_box_2_title;
+            this.title = dataSet.title
+
             this.totalItemSize = this.originalMainListSize(questionId);
             }
         
@@ -235,26 +271,43 @@ export default {
 
 <style lang="scss">
 
+
 .drag-n-drop{
+    .title{
+        font-weight: bold;
+        font-stretch: normal;
+        font-style: normal;
+        font-size: 14px;
+    }
     .main-selection{
         .count{
             float: right;
+            color:#808284;
+            font-size: 11px;
+            padding: 10px
         }
         .list-group{
 
             display: flex;
             flex-wrap: wrap;
-            background: rgb(38, 38, 133);
+            background: #104c97;
             padding: 20px;
+            border-radius: 8px;
             .selected{
                 background-color: rgb(39, 199, 252) !important;
             }
             .list-group-item{
                 padding: 10px;
-                border-radius: 10px;
+                border-radius: 4px;
                 margin: 5px;
+                font-size: 13px;
                 font-weight: bold;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
                 background: white;
+                cursor: grab;
+                .close-btn{
+                    cursor: default;
+                }
             }
            
         }
@@ -263,24 +316,38 @@ export default {
     .question-sections{
         margin-top: 30px;
         display: flex;
+         border-radius: 8px;
+       
         // flex-direction: row;
         .question-section-item{
+            h4{
+                text-align: left;
+                padding: 0 10px;
+            }
             flex: 1;
             .list-group{
                 display: flex;
                 flex-wrap:wrap;
-                background: lightgray;
                 align-content: flex-start;
                 height: 300px;
-                border-radius: 10px;
+                border-radius: 8px;
+                border: dashed 1px #b7b7b7;
+                background-color: #fff;
                 padding: 20px;
+               
             .list-group-item{
                 padding: 10px;
-                border-radius: 10px;
+                border-radius: 4px;
                 margin: 5px;
+                font-size: 13px;
                 height: fit-content;
                 font-weight: bold;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
                 background: white;
+                cursor: grab;
+                .close-btn{
+                    cursor: default;
+                }
 
             }
             .error{
@@ -288,6 +355,9 @@ export default {
               color: white;
             }
            
+        }
+        .list-group-drag{
+              background-color: #f3f3f3
         }
         }
         .question-section-item:first-child {
