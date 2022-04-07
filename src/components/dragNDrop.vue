@@ -13,7 +13,7 @@
         itemKey="keyword"
       >
         <template #item="{ element, index }">
-          <div class="list-group-item">{{ element.keyword }} </div>
+          <div class="dragdrop-list-group-item">{{ element.keyword }} </div>
         </template>
       </draggable>
          <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
@@ -34,7 +34,7 @@
                 @end="drag"
             >
                 <template #item="{ element, index }">
-                <div :class="! element.validity ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                <div :class="! element.validity ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </template>
             </draggable>
         </div>
@@ -51,7 +51,7 @@
         :disabled=drag
         itemKey="name">
         <template #item="{ element, index }">
-          <div  :class="! element.validity ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
+          <div  :class="! element.validity ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
         </template>
       </draggable>
     </div>
@@ -67,7 +67,7 @@
     <div class="main-selection">
       <div class="list-group">
         <div class="" v-for="element in mainList" :key="element.keyword">
-          <div class="list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>
+          <div class="dragdrop-list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>
       </div>
     </div>
       <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
@@ -78,7 +78,7 @@
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
-                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="! element.error ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="leftList.length==0 && leftToggle" >
@@ -90,7 +90,7 @@
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="rightList.length>0 && leftToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
-                    <div :class="! element.error ?'list-group-item' : 'list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="! element.error ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
@@ -303,7 +303,7 @@ export default {
             .selected{
                 background-color: rgb(39, 199, 252) !important;
             }
-            .list-group-item{
+            .dragdrop-list-group-item{
                 padding: 10px;
                 border-radius: 4px;
                 margin: 5px;
@@ -342,7 +342,7 @@ export default {
                 background-color: #fff;
                 padding: 20px;
                
-            .list-group-item{
+            .dragdrop-list-group-item{
                 padding: 10px;
                 border-radius: 4px;
                 margin: 5px;
@@ -454,7 +454,8 @@ export default {
                         min-height: 100px;
                         border-radius: 10px;
                         padding: 20px;
-                    .list-group-item{
+
+                    .dragdrop-list-group-item{
                         padding: 10px;
                         border-radius: 10px;
                         margin: 5px;

@@ -3,7 +3,7 @@ const postDataUrl = document.querySelector("#post-data-url").value;
 
 const api = {
 
-    root: import.meta.env.VITE_BASE_URL,
+    // root: import.meta.env.VITE_BASE_URL,
     getData: getDataUrl,
     postData: postDataUrl,
 
