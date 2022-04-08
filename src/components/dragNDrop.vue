@@ -16,15 +16,17 @@
           <div class="dragdrop-list-group-item">{{ element.keyword }} </div>
         </template>
       </draggable>
-      <div class="popper-section">
-        <Popper :arrow="true"  :arrowPadding="20">
-            <i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span>
-            <template #content :class="pop-up">
-                <div>This is the Popper content</div>
-            </template>
-        </Popper>
+      <div class="main-section-footer">
+            <div class="popper-section">
+                <Popper :arrow="true"  :arrowPadding="20">
+                    <i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span>
+                    <template #content :class="pop-up">
+                        <div>This is the Popper content</div>
+                    </template>
+                </Popper>
+            </div>
+            <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
       </div>
-         <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
     </div>
  
 
@@ -302,24 +304,38 @@ export default {
             font-size: 11px;
             padding: 10px
         }
-        .popper{
-            padding: 9px 18px 11px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-            border: solid 1px #e5e5e5;
-            color: black;
-            margin: 0px 10px  !important;
-            background-color: #fff;
+    
+        .main-section-footer{
+            display: flex;
+            align-items: center;
+            flex-flow: row;
+            .popper{
+                padding: 9px 18px 11px;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+                border: solid 1px #e5e5e5;
+                color: black;
+                margin: 0px 10px  !important;
+                background-color: #fff;
+            }
+            .how-it-works{
+                padding: 10px 0px;
+            }
+            .popper-section{
+                font-size: 14px;
+                color: #104c97;
+                padding: 10px;
+                text-align: left;
+                flex: 1;
+                
+                .inline-block{
+                    &::after{
+                    display: block;
+                }
+            }
         }
-        .how-it-works{
-            padding: 10px 0px;
         }
-        .popper-section{
-            font-size: 14px;
-            color: #104c97;
-            padding: 10px;
-            text-align: left;
-        }
+     
         .list-group{
 
             display: flex;
