@@ -16,6 +16,14 @@
           <div class="dragdrop-list-group-item">{{ element.keyword }} </div>
         </template>
       </draggable>
+      <div class="popper-section">
+        <Popper :arrow="true"  :arrowPadding="20">
+            <i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span>
+            <template #content :class="pop-up">
+                <div>This is the Popper content</div>
+            </template>
+        </Popper>
+      </div>
          <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
     </div>
  
@@ -102,6 +110,7 @@
 </template>
 <script>
 import draggable from 'vuedraggable'
+import Popper from "vue3-popper";
 import dataJson from '../../data.json'
 import questionDataApi from '../services/QuestionsDataAPI'
 const questionId = document.querySelector("#question-id").value;
@@ -110,6 +119,7 @@ const nextQuestionId = document.querySelector("#nextqid").value;
 export default {
     components: {
             draggable,
+            Popper
         },
   data() {
     return {
@@ -278,7 +288,6 @@ export default {
 
 <style lang="scss">
 
-
 .drag-n-drop{
     .title{
         font-weight: bold;
@@ -293,6 +302,24 @@ export default {
             font-size: 11px;
             padding: 10px
         }
+        .popper{
+            padding: 9px 18px 11px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            border: solid 1px #e5e5e5;
+            color: black;
+            margin: 0px 10px  !important;
+            background-color: #fff;
+        }
+        .how-it-works{
+            padding: 10px 0px;
+        }
+        .popper-section{
+            font-size: 14px;
+            color: #104c97;
+            padding: 10px;
+            text-align: left;
+        }
         .list-group{
 
             display: flex;
@@ -300,6 +327,7 @@ export default {
             background: #104c97;
             padding: 20px;
             border-radius: 8px;
+            flex-direction: unset;
             .selected{
                 background-color: rgb(39, 199, 252) !important;
             }
@@ -341,6 +369,7 @@ export default {
                 border: dashed 1px #b7b7b7;
                 background-color: #fff;
                 padding: 20px;
+                flex-direction: unset;
                
             .dragdrop-list-group-item{
                 padding: 10px;
@@ -374,9 +403,10 @@ export default {
     }
     .answer-section{
         padding: 20px;
-
+  
+  
         .answer-title{
-            color:lightgreen;
+            color:#76b14d;
             text-align: left;
             font-weight: bold;
         }
