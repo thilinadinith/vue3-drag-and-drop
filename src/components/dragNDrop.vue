@@ -2,26 +2,29 @@
 <div class="drag-n-drop" v-if="!isMobile()">
     <div></div>
     <div class="main-selection">
-        <draggable
-        class="list-group"
-        :list="mainList"
-        group="answers"
-        :move="checkMove"
-        @change="log"
-        @end="onEnd"
-        :disabled="drag"
-        itemKey="keyword"
-      >
-        <template #item="{ element, index }">
-          <div class="dragdrop-list-group-item">{{ element.keyword }} </div>
-        </template>
-      </draggable>
+        <div class="drag-section"> 
+            <draggable
+                class="list-group"
+                :list="mainList"
+                group="answers"
+                :move="checkMove"
+                @change="log"
+                @end="onEnd"
+                :disabled="drag"
+                itemKey="keyword"
+            >
+                <template #item="{ element, index }">
+                <div class="dragdrop-list-group-item">{{ element.keyword }} </div>
+                </template>
+            </draggable>
+             <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
+        </div>
       <div class="main-section-footer">
             <div class="popper-section">
                 <Popper :arrow="true"  :arrowPadding="20">
                     <i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span>
                     <template #content :class="pop-up">
-                        <div>This is the Popper content</div>
+                        <div>{{howItWorks}}</div>
                     </template>
                 </Popper>
             </div>
@@ -32,7 +35,7 @@
 
     <div class="question-sections">
         <div class="question-section-item">
-            <h4>{{dragBoxOneTitle}}<span v-if="leftList.length>0">({{leftList.length}})</span></h4>
+            <h4>{{dragBoxOneTitle}} <span class='box-count' v-if="leftList.length>0">({{leftList.length}})</span></h4>
             <draggable
                 class="list-group"
                 :class="dragging?'list-group-drag':''"
@@ -50,7 +53,7 @@
         </div>
 
     <div class="question-section-item">
-      <h4>{{dragBoxTwoTitle}}<span v-if="rightList.length>0">({{rightList.length}})</span> </h4>
+      <h4>{{dragBoxTwoTitle}}<span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span> </h4>
       <draggable
         class="list-group"
         :class="dragging?'list-group-drag':''"
@@ -140,7 +143,8 @@ export default {
         dragBoxOneTitle :"",
         dragBOxTwoTitle : '',
         title :"",
-        answerDescription:""
+        answerDescription:"",
+        howItWorks :""
        
 
         
@@ -152,7 +156,7 @@ export default {
           return this.mainList.length
        } ,
         isErrorAvaiable () {
-            return  this.leftList.some( el=>  el.error==true) ||this.rightList.some( el=>  el.error==true)  
+            return  this.leftList.some( el=>  el.validity==false) ||this.rightList.some( el=>  el.validity==false)  
         } ,
         answerTitle(){
             return this.isErrorAvaiable? 'You are not correct' : 'You are correct'
@@ -276,6 +280,7 @@ export default {
             this.dragBoxOneTitle =dataSet.drag_box_1_title;
             this.dragBoxTwoTitle =dataSet.drag_box_2_title;
             this.title = dataSet.title
+            this.howItWorks = dataSet.how_it_works
 
             this.totalItemSize = this.originalMainListSize(questionId);
             }
@@ -298,6 +303,14 @@ export default {
         font-size: 14px;
     }
     .main-selection{
+        .drag-section{
+            background-color: #104c97;
+            .empty{
+                padding-bottom: 30px;
+                color: white;
+                font-weight: bold;
+            }
+        }
         .count{
             float: right;
             color:#808284;
@@ -406,7 +419,9 @@ export default {
               background-color:darkred;
               color: white;
             }
-           
+        }
+        .box-count{
+            padding: 0px 10px;
         }
         .list-group-drag{
               background-color: #f3f3f3
