@@ -21,11 +21,11 @@
         </div>
       <div class="main-section-footer">
             <div class="popper-section">
-                <Popper :arrow="true"  :arrowPadding="20">
-                    <i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span>
-                    <template #content :class="pop-up">
-                        <div>{{howItWorks}}</div>
-                    </template>
+                <Popper arrow
+                offsetDistance=0
+                offsetSkid=140
+                    :content="howItWorks">
+                    <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
             </div>
             <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
@@ -47,7 +47,7 @@
                 @end="drag"
             >
                 <template #item="{ element, index }">
-                <div :class="! element.validity ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </template>
             </draggable>
         </div>
@@ -64,15 +64,15 @@
         :disabled=drag
         itemKey="name">
         <template #item="{ element, index }">
-          <div  :class="! element.validity ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
+          <div  :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
         </template>
       </draggable>
     </div>
   </div>
     <div class="answer-section">
-            <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'"> {{answerTitle}} </div>
+            <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
             <div v-if="validate" class="answer-description">{{answerDescription}}</div>
-          <div><a  class="continuebtn" @click="submit()" v-if="!validate"> Check Answer</a></div>
+          <div><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
         </div>
       
 </div>
@@ -82,8 +82,19 @@
         <div class="" v-for="element in mainList" :key="element.keyword">
           <div class="dragdrop-list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>
       </div>
+    <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
     </div>
-      <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+       <div class="main-section-footer">
+            <div class="popper-section">
+                <Popper arrow
+                offsetDistance=0
+                offsetSkid=140
+                    :content="howItWorks">
+                    <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
+                </Popper>
+            </div>
+            <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+      </div>
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
@@ -100,7 +111,7 @@
         </div>
         <div class="mobile-question-item">
             <div class="title-mobile"> this is left list <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
-            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
+            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'> tap and drop here</div>
             <div class="list-group" v-show="rightList.length>0 && leftToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
                     <div :class="! element.error ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
@@ -111,6 +122,12 @@
             </div>
         </div>
     </div>
+
+       <div class="answer-section">
+            <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
+            <div v-if="validate" class="answer-description">{{answerDescription}}</div>
+          <div><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
+        </div>
 </div>
 </template>
 <script>
@@ -159,7 +176,7 @@ export default {
             return  this.leftList.some( el=>  el.validity==false) ||this.rightList.some( el=>  el.validity==false)  
         } ,
         answerTitle(){
-            return this.isErrorAvaiable? 'You are not correct' : 'You are correct'
+            return this.isErrorAvaiable? '<span class="fa-stack"><i class="fa fa-circle-o fa-stack-1x wrong-answer-icon "></i> <i class="fa fa-close fa-stack-1x "></i></span>  You are not correct' : '<span><i class="fa fa-check-circle-o wrong-answer-icon "></i> </span><span>You are correct</span>'
         }
   },
 
@@ -202,6 +219,8 @@ export default {
             this.rightList.push(el);
             this.mainList = this.mainList.filter(ele => ele.keyword !=el.keyword)
         })
+        this.leftToggle = true;
+        this.rightToggle = true;
         this.selectedItems = [];
     },
     isMobile() {return  window.innerWidth <= 760 },
@@ -209,6 +228,8 @@ export default {
         return this.getData(id)
     },
     submit() {
+        if(this.mainList.length>0)return;
+
         this.leftList.forEach(element => {
             element.KeywordBelongsTo = 'box_1'
             // if (element.KeywordBelongsTo != 'box_1') {
@@ -235,7 +256,12 @@ export default {
             this.rightList = res.data.drag_column_box_2;
             this.answerDescription = res.data.answer_description;
             if(nextQuestionId>0) 
-            document.querySelector("#next-wrap").classList.remove("d-none");
+                document.querySelector("#next-wrap").classList.remove("d-none");
+            else{
+                document.querySelector("#next-question").value = 'View Result';
+                document.querySelector("#next-question").classList.add("result");
+                document.querySelector("#next-wrap").classList.remove("d-none");
+            }
 
 
             this.validate =true
@@ -266,6 +292,7 @@ export default {
         this.leftList = this.deleteItem(this.leftList, element)
     },
     deleteItem(list, element) {
+        element.selected ? element.selected=false:'';
         this.mainList.unshift(element);
         return list.filter(el => el.keyword != element.keyword)
     }
@@ -305,6 +332,7 @@ export default {
     .main-selection{
         .drag-section{
             background-color: #104c97;
+            border-radius: 8px;
             .empty{
                 padding-bottom: 30px;
                 color: white;
@@ -333,6 +361,7 @@ export default {
             }
             .how-it-works{
                 padding: 10px 0px;
+                cursor: default;
             }
             .popper-section{
                 font-size: 14px;
@@ -433,7 +462,7 @@ export default {
        
     }
     .answer-section{
-        padding: 20px;
+        padding: 20px 0px;
   
   
         .answer-title{
@@ -442,7 +471,11 @@ export default {
             font-weight: bold;
         }
         .error{
-            color:red
+            color:#ab121a
+        }
+        .wrong-answer-icon{
+            font-size: 24px;
+            vertical-align: middle;
         }
         .answer-description{
             background: lightgray;
@@ -468,8 +501,15 @@ export default {
             text-shadow:0px 1px 0px #263666;
             margin: 10px;
         }
-         .continuebtn :hover {
-            background-color:#415989;
+       
+        .disabled{
+            background-color: #d9d9d9;
+            text-shadow: none;
+            box-shadow : none;
+        }
+         .disabled :hover {
+            background-color: #d9d9d9 !important;
+             color:white !important;
         }
         .continuebtn:active {
             position:relative;
@@ -482,8 +522,14 @@ export default {
 @media only screen and (max-width: 600px) {
 .drag-n-drop{
     margin: 10px;
-    main-selection{
-
+    .main-selection{
+        .list-group{
+            .empty{
+                margin: auto;
+                color: white;
+                font-weight: bold;
+            }
+        }
     }
 }
 .question-sections{

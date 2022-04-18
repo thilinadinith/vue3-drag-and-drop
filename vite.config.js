@@ -22,8 +22,6 @@ export default defineConfig({
             ],
             output: {
                 inlineDynamicImports: false,
-                // file: pkg.main,
-
                 dir: 'dist',
                 manualChunks: false,
                 entryFileNames: `assets/[name].js`,
