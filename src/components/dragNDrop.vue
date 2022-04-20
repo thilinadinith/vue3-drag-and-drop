@@ -79,10 +79,21 @@
 <div class="drag-n-drop" v-if="isMobile()">
     <div class="main-selection">
       <div class="list-group">
-        <div class="" v-for="element in mainList" :key="element.keyword">
-          <div class="dragdrop-list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>
-      </div>
-    <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
+        <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
+        <Carousel :itemsToShow="1">
+            
+            <Slide v-for="(elements, index) in sliderList" :key="index">
+            <div class="carousel__item" style="display:flex; flex-wrap:wrap;">
+                 <div v-for="(element, index) in elements" :key="index" class="dragdrop-list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>       
+            </div>
+            </Slide>
+            <template #addons>
+            <Navigation />
+            <Pagination />
+            </template>
+        </Carousel>
+       
+  
     </div>
        <div class="main-section-footer">
             <div class="popper-section">
@@ -102,7 +113,7 @@
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
-                    <div :class="! element.error ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="leftList.length==0 && leftToggle" >
@@ -114,7 +125,7 @@
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'> tap and drop here</div>
             <div class="list-group" v-show="rightList.length>0 && leftToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
-                    <div :class="! element.error ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
@@ -131,6 +142,8 @@
 </div>
 </template>
 <script>
+import 'vue3-carousel/dist/carousel.css';
+import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import draggable from 'vuedraggable'
 import Popper from "vue3-popper";
 import dataJson from '../../data.json'
@@ -141,7 +154,11 @@ const nextQuestionId = document.querySelector("#nextqid").value;
 export default {
     components: {
             draggable,
-            Popper
+            Popper,
+            Carousel,
+            Slide,
+            Pagination,
+            Navigation,
         },
   data() {
     return {
@@ -168,7 +185,25 @@ export default {
     }
   },
   computed:{
-      
+
+        sliderList(){
+            let sliderList =[]
+            let i=0;
+            let j=0;
+            while(this.mainList.length!=i && this.mainList.length >0){
+                let element = this.mainList[i];
+                if(i%5==0){
+                    sliderList[j]=[];
+                    sliderList[j].push(element)
+                    j++;
+                }else{
+                    sliderList[j-1].push(element)
+                }
+                i++;
+            }
+            return sliderList;
+        }
+      ,
        itemsAvaiable () {
           return this.mainList.length
        } ,
@@ -388,6 +423,7 @@ export default {
             flex-direction: unset;
             .selected{
                 background-color: rgb(39, 199, 252) !important;
+                color: white;
             }
             .dragdrop-list-group-item{
                 padding: 10px;
@@ -576,10 +612,27 @@ export default {
                         margin: auto;
                         margin-top: 20px;
                     }
+                    
+
+            .error{
+                background-color:darkred;
+                color: white;}
+        
+
             }
 
     }
  
+}
+.carousel__prev--in-active, .carousel__prev , .carousel__next,
+.carousel__next--in-active {
+  display: none;
+}
+.carousel__pagination{
+    padding: 0px;
+}
+.carousel{
+    width: 100%;
 }
 
 }
