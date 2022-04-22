@@ -10,15 +10,15 @@ export default defineConfig({
         cssCodeSplit: false,
         rollupOptions: {
             plugins: [
-                obfuscator({
-                    transformObjectKeys: true,
-                    unicodeEscapeSequence: true,
-                    numbersToExpressions: true,
-                    shuffleStringArray: true,
-                    splitStrings: true,
-                    stringArrayThreshold: 1,
-                    identifierNamesGenerator: 'hexadecimal'
-                })
+                // obfuscator({
+                //     transformObjectKeys: true,
+                //     unicodeEscapeSequence: true,
+                //     numbersToExpressions: true,
+                //     shuffleStringArray: true,
+                //     splitStrings: true,
+                //     stringArrayThreshold: 1,
+                //     identifierNamesGenerator: 'hexadecimal'
+                // })
             ],
             output: {
                 inlineDynamicImports: false,

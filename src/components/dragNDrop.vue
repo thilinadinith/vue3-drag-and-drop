@@ -79,8 +79,7 @@
 <div class="drag-n-drop" v-if="isMobile()">
     <div class="main-selection">
       <div class="list-group">
-        <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
-        <Carousel :itemsToShow="1">
+         <Carousel  v-if="sliderList.length!==0" :itemsToShow="1">
             
             <Slide v-for="(elements, index) in sliderList" :key="index">
             <div class="carousel__item" style="display:flex; flex-wrap:wrap;">
@@ -190,7 +189,7 @@ export default {
             let sliderList =[]
             let i=0;
             let j=0;
-            while(this.mainList.length!=i && this.mainList.length >0){
+            while( this.mainList.length!=i && this.mainList.length >0){
                 let element = this.mainList[i];
                 if(i%5==0){
                     sliderList[j]=[];
@@ -356,6 +355,10 @@ export default {
 </script>
 
 <style lang="scss">
+:root {
+    --vc-clr-primary: #e5e5e5;
+    --vc-clr-secondary: #e5e5e5;
+    }
 
 .drag-n-drop{
     .title{
@@ -633,6 +636,16 @@ export default {
 }
 .carousel{
     width: 100%;
+}
+.carousel__pagination-button{
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    padding: 0px;
+    opacity: 0.2;
+}
+.carousel__pagination-button--active{
+    opacity: 1;
 }
 
 }
