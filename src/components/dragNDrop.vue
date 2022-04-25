@@ -24,7 +24,7 @@
                 <Popper arrow
                 offsetDistance=0
                 offsetSkid=140
-                    :content="howItWorks">
+                :content="howItWorksDesktop">
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
             </div>
@@ -79,8 +79,9 @@
 <div class="drag-n-drop" v-if="isMobile()">
     <div class="main-selection">
       <div class="list-group">
+             <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
          <Carousel  v-if="sliderList.length!==0" :itemsToShow="1">
-            
+           
             <Slide v-for="(elements, index) in sliderList" :key="index">
             <div class="carousel__item" style="display:flex; flex-wrap:wrap;">
                  <div v-for="(element, index) in elements" :key="index" class="dragdrop-list-group-item" :class="element.selected? 'selected' :'' " @click="selectItem(element)">{{ element.keyword }} </div>       
@@ -99,7 +100,7 @@
                 <Popper arrow
                 offsetDistance=0
                 offsetSkid=140
-                    :content="howItWorks">
+                    :content="howItWorksMobile">
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
             </div>
@@ -108,7 +109,7 @@
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
-            <div class="title-mobile"> this is left list <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
+            <div class="title-mobile">{{dragBoxOneTitle}} <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
@@ -120,11 +121,11 @@
             </div>
         </div>
         <div class="mobile-question-item">
-            <div class="title-mobile"> this is left list <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
+            <div class="title-mobile"> {{dragBoxTwoTitle}} <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'> tap and drop here</div>
             <div class="list-group" v-show="rightList.length>0 && leftToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
-                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
@@ -341,7 +342,8 @@ export default {
             this.dragBoxOneTitle =dataSet.drag_box_1_title;
             this.dragBoxTwoTitle =dataSet.drag_box_2_title;
             this.title = dataSet.title
-            this.howItWorks = dataSet.how_it_works
+            this.howItWorksDesktop = dataSet.how_it_works.desktop
+            this.howItWorksMobile = dataSet.how_it_works.mobile
 
             this.totalItemSize = this.originalMainListSize(questionId);
             }
@@ -389,12 +391,13 @@ export default {
             align-items: center;
             flex-flow: row;
             .popper{
+                inset: 0px auto auto 20px ;
                 padding: 9px 18px 11px;
                 border-radius: 4px;
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
                 border: solid 1px #e5e5e5;
                 color: black;
-                margin: 0px 10px  !important;
+                margin: 0px 10px ;
                 background-color: #fff;
             }
             .how-it-works{
@@ -404,7 +407,7 @@ export default {
             .popper-section{
                 font-size: 14px;
                 color: #104c97;
-                padding: 10px;
+                padding: 0px;
                 text-align: left;
                 flex: 1;
                 
@@ -559,17 +562,29 @@ export default {
     }
 }
 @media only screen and (max-width: 600px) {
+
 .drag-n-drop{
     margin: 10px;
     .main-selection{
         .list-group{
             .empty{
+                padding: 70px 20px;
                 margin: auto;
                 color: white;
                 font-weight: bold;
             }
         }
     }
+     .popper{
+                inset: 0px 20px auto 0px !important;
+                padding: 9px 18px 11px;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+                border: solid 1px #e5e5e5;
+                color: black;
+                margin: 0px 0px  !important;
+                background-color: #fff;
+            }
 }
 .question-sections{
     display: block !important;
@@ -579,35 +594,44 @@ export default {
                 border-style: solid;
                 border-width: 0.5px;
                 padding: 20px;
-                border-radius: 10px;
                 text-align: left;
                 font-weight: bold;
+                border-radius: 8px;
+                border: solid 1px #d9d9d9;
+                background-color: #fff;
                 i {
                     float: right;
                 }
             }
             .add-button{
-                border-style: dashed;
-                padding: 10px;
-                border-radius: 10px;
-                border-color: #3954a7;
+                margin: 4px;
+                border-radius: 8px;
+                padding: 11px 75px 12px;
+                border: dashed 1px #b7b7b7;
+                background-color: #f3f3f3;
             }
             .list-group{
                         display: flex;
                         flex-wrap:wrap;
-                        background: lightgray;
                         align-content: flex-start;
                         min-height: 100px;
-                        border-radius: 10px;
                         padding: 20px;
+                        border-radius: 8px;
+                        border: solid 1px #d9d9d9;
+                        background-color: #fff;
+                        margin: 4px;
 
                     .dragdrop-list-group-item{
                         padding: 10px;
-                        border-radius: 10px;
                         margin: 5px;
+                        font-size: 13px;
                         height: fit-content;
                         font-weight: bold;
                         background: white;
+                        padding: 8px 8px 9px 10px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+                        border: solid 1px #d9d9d9;
 
                     }
                     .empty-message{

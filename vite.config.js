@@ -7,6 +7,7 @@ import { obfuscator } from 'rollup-obfuscator';
 export default defineConfig({
     plugins: [vue()],
     build: {
+        sourcemap: true,
         cssCodeSplit: false,
         rollupOptions: {
             plugins: [
