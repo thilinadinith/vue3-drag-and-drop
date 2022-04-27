@@ -99,7 +99,6 @@
             <div class="popper-section">
                 <Popper arrow
                 offsetDistance=0
-                offsetSkid=140
                     :content="howItWorksMobile">
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
@@ -109,7 +108,7 @@
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
-            <div class="title-mobile">{{dragBoxOneTitle}} <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
+            <div class="title-mobile">{{dragBoxOneTitle}} <span class='box-count'  v-if="leftList.length>0">({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
@@ -121,11 +120,11 @@
             </div>
         </div>
         <div class="mobile-question-item">
-            <div class="title-mobile"> {{dragBoxTwoTitle}} <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
+            <div class="title-mobile"> {{dragBoxTwoTitle}} <span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'> tap and drop here</div>
-            <div class="list-group" v-show="rightList.length>0 && leftToggle">
+            <div class="list-group" v-show="rightList.length>0 && rightToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
-                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteList(element)" class="close-btn fa fa-close"></i></div>
+                    <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i></div>
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
@@ -137,7 +136,7 @@
        <div class="answer-section">
             <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
             <div v-if="validate" class="answer-description">{{answerDescription}}</div>
-          <div><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
+          <div class="check-answer_button"><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
         </div>
 </div>
 </template>
@@ -246,7 +245,6 @@ export default {
             this.mainList = this.mainList.filter(ele => ele.keyword !=el.keyword)
         })
         this.leftToggle = true;
-        this.rightToggle = true;
         this.selectedItems = [];
     },
     addItemsRight(){
@@ -254,7 +252,6 @@ export default {
             this.rightList.push(el);
             this.mainList = this.mainList.filter(ele => ele.keyword !=el.keyword)
         })
-        this.leftToggle = true;
         this.rightToggle = true;
         this.selectedItems = [];
     },
@@ -397,8 +394,8 @@ export default {
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
                 border: solid 1px #e5e5e5;
                 color: black;
-                margin: 0px 10px ;
                 background-color: #fff;
+                margin :0 10px !important;
             }
             .how-it-works{
                 padding: 10px 0px;
@@ -568,7 +565,7 @@ export default {
     .main-selection{
         .list-group{
             .empty{
-                padding: 70px 20px;
+                padding: 20px 20px;
                 margin: auto;
                 color: white;
                 font-weight: bold;
@@ -576,15 +573,18 @@ export default {
         }
     }
      .popper{
-                inset: 0px 20px auto 0px !important;
+                right: 10px !important;
+                left: 10px !important;
+                width: inherit;
                 padding: 9px 18px 11px;
                 border-radius: 4px;
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
                 border: solid 1px #e5e5e5;
                 color: black;
-                margin: 0px 0px  !important;
                 background-color: #fff;
             }
+          
+
 }
 .question-sections{
     display: block !important;
@@ -615,7 +615,7 @@ export default {
                         flex-wrap:wrap;
                         align-content: flex-start;
                         min-height: 100px;
-                        padding: 20px;
+                        padding: 5px;
                         border-radius: 8px;
                         border: solid 1px #d9d9d9;
                         background-color: #fff;
@@ -651,6 +651,26 @@ export default {
     }
  
 }
+    .continuebtn {
+            float: unset !important;
+            box-shadow:inset 0px 0px 15px 3px #23395e;
+            background-color:#2e466e;
+            border-radius:20px;
+            cursor:pointer;
+            color:#ffffff;
+            font-family:Arial;
+            font-size:15px;
+            padding:10px 25px;
+            text-decoration:none;
+            width: 100%;
+            text-shadow:0px 1px 0px #263666;
+            margin :10px 0px !important;
+
+        }
+        .check-answer_button{
+            display: flex;
+        }
+       
 .carousel__prev--in-active, .carousel__prev , .carousel__next,
 .carousel__next--in-active {
   display: none;
