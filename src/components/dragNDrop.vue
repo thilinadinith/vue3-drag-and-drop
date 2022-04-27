@@ -354,6 +354,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import url("https://use.typekit.net/dqd2ckm.css");
 :root {
     --vc-clr-primary: #e5e5e5;
     --vc-clr-secondary: #e5e5e5;
@@ -379,7 +380,8 @@ export default {
         .count{
             float: right;
             color:#808284;
-            font-size: 11px;
+            font-family: "proxima-nova";
+            font-size: 14px;
             padding: 10px
         }
     
@@ -400,6 +402,8 @@ export default {
             .how-it-works{
                 padding: 10px 0px;
                 cursor: default;
+                font-family: "proxima-nova";
+                font-size: 14px;
             }
             .popper-section{
                 font-size: 14px;
@@ -429,11 +433,13 @@ export default {
                 color: white;
             }
             .dragdrop-list-group-item{
+                font-family: "proxima-nova";
                 padding: 10px;
+                font-size: 14px;
+                font-weight: 600;
                 border-radius: 4px;
                 margin: 5px;
-                font-size: 13px;
-                font-weight: bold;
+                font-size: 14px;
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
                 background: white;
                 cursor: grab;
@@ -455,6 +461,8 @@ export default {
             h4{
                 text-align: left;
                 padding: 0 10px;
+                font-family: "proxima-nova";
+                font-size: 14px;
             }
             flex: 1;
             .list-group{
@@ -472,9 +480,9 @@ export default {
                 padding: 10px;
                 border-radius: 4px;
                 margin: 5px;
-                font-size: 13px;
+                font-family: "proxima-nova";
+                font-size: 14px;
                 height: fit-content;
-                font-weight: bold;
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
                 background: white;
                 cursor: grab;
@@ -507,7 +515,10 @@ export default {
         .answer-title{
             color:#76b14d;
             text-align: left;
+            font-family: "proxima-nova";
+            font-size: 14px;
             font-weight: bold;
+
         }
         .error{
             color:#ab121a
@@ -517,24 +528,27 @@ export default {
             vertical-align: middle;
         }
         .answer-description{
-            background: lightgray;
+            color: #333;
+            background-color: #e5e5e5;
             padding: 20px;
             border-radius: 10px;
             margin: 10px 0px;
             text-align: left;
+            font-family: "proxima-nova";
+            font-size: 14px;
 
         }
 
         .continuebtn {
             float: right;
             box-shadow:inset 0px 0px 15px 3px #23395e;
-            background-color:#2e466e;
+            background-color:#104c97;
             border-radius:20px;
             display:inline-block;
             cursor:pointer;
             color:#ffffff;
-            font-family:Arial;
-            font-size:15px;
+            font-family: "proxima-nova";
+            font-size: 16px;
             padding:10px 25px;
             text-decoration:none;
             text-shadow:0px 1px 0px #263666;
@@ -599,6 +613,8 @@ export default {
                 border-radius: 8px;
                 border: solid 1px #d9d9d9;
                 background-color: #fff;
+                font-family: "proxima-nova";
+                font-size: 14px;
                 i {
                     float: right;
                 }
@@ -609,6 +625,8 @@ export default {
                 padding: 11px 75px 12px;
                 border: dashed 1px #b7b7b7;
                 background-color: #f3f3f3;
+                font-family: "proxima-nova";
+                font-size: 14px;
             }
             .list-group{
                         display: flex;
@@ -624,9 +642,9 @@ export default {
                     .dragdrop-list-group-item{
                         padding: 10px;
                         margin: 5px;
-                        font-size: 13px;
+                        font-family: "proxima-nova";
+                        font-size: 14px;
                         height: fit-content;
-                        font-weight: bold;
                         background: white;
                         padding: 8px 8px 9px 10px;
                         border-radius: 4px;
