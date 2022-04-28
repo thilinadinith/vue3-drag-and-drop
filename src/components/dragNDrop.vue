@@ -103,13 +103,13 @@
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
             </div>
-            <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+            <div class="count">{{itemsAvaiable}}/{{totalItemSize}} Left</div>
       </div>
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
             <div class="title-mobile">{{dragBoxOneTitle}} <span class='box-count'  v-if="leftList.length>0">({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
-            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> tap and drop here</div>
+            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> Tap & drop option here </div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
                     <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
@@ -121,7 +121,7 @@
         </div>
         <div class="mobile-question-item">
             <div class="title-mobile"> {{dragBoxTwoTitle}} <span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
-            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'> tap and drop here</div>
+            <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'>Tap & drop option here</div>
             <div class="list-group" v-show="rightList.length>0 && rightToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
                     <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i></div>
@@ -601,9 +601,10 @@ export default {
 
 }
 .question-sections{
+    margin-top: 10px !important;
     display: block !important;
     .mobile-question-item{
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             .title-mobile{
                 border-style: solid;
                 border-width: 0.5px;
@@ -629,6 +630,7 @@ export default {
                 font-size: 14px;
             }
             .list-group{
+                        flex-flow: wrap;
                         display: flex;
                         flex-wrap:wrap;
                         align-content: flex-start;
@@ -669,6 +671,8 @@ export default {
     }
  
 }
+ .answer-section{
+     padding: 0px !important;
     .continuebtn {
             float: unset !important;
             box-shadow:inset 0px 0px 15px 3px #23395e;
@@ -688,6 +692,8 @@ export default {
         .check-answer_button{
             display: flex;
         }
+ }
+
        
 .carousel__prev--in-active, .carousel__prev , .carousel__next,
 .carousel__next--in-active {
