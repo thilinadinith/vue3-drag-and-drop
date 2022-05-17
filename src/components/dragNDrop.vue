@@ -7,7 +7,7 @@
                 class="list-group"
                 :list="mainList"
                 group="answers"
-                :move="checkMove"
+                @choose="checkMove"
                 @change="log"
                 @end="onEnd"
                 :disabled="drag"
@@ -28,7 +28,7 @@
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
             </div>
-            <div class="count">{{itemsAvaiable}}/{{totalItemSize}}</div>
+            <div class="count">{{itemsAvaiable}}/{{totalItemSize}} Left</div>
       </div>
     </div>
  
@@ -36,7 +36,11 @@
     <div class="question-sections">
         <div class="question-section-item">
             <h4>{{dragBoxOneTitle}} <span class='box-count' v-if="leftList.length>0">({{leftList.length}})</span></h4>
+             <div  class="list-group" v-show="leftList.length==0 && dragging !=true" >
+                        <div class="empty-message">Drop an option here</div>
+                    </div>
             <draggable
+                v-show=" leftList.length !=0 || dragging ==true" 
                 class="list-group"
                 :class="dragging?'list-group-drag':''"
                 :list="leftList"
@@ -44,9 +48,11 @@
                 group="answers"
                 :disabled=drag
                 itemKey="name"
-                @end="drag"
+                @choose="checkMove"
+                 @end="onEnd"
             >
                 <template #item="{ element, index }">
+                   
                 <div :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteLeftList(element)" class="close-btn fa fa-close"></i></div>
                 </template>
             </draggable>
@@ -54,14 +60,19 @@
 
     <div class="question-section-item">
       <h4>{{dragBoxTwoTitle}}<span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span> </h4>
+          <div  class="list-group" v-show="rightList.length==0 && dragging !=true" >
+                        <div class="empty-message">Drop an option here</div>
+                    </div>
       <draggable
+        v-show="rightList.length!=0|| dragging ==true" 
         class="list-group"
         :class="dragging?'list-group-drag':''"
         :list="rightList"
         group="answers"
         @change="log"
-        @end="drag"
+         @end="onEnd"
         :disabled=drag
+        @choose="checkMove"
         itemKey="name">
         <template #item="{ element, index }">
           <div  :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
@@ -72,7 +83,7 @@
     <div class="answer-section">
             <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
             <div v-if="validate" class="answer-description">{{answerDescription}}</div>
-          <div><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
+          <div><a  class="continuebtn btn btn-primary" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
         </div>
       
 </div>
@@ -108,7 +119,7 @@
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
-            <div class="title-mobile">{{dragBoxOneTitle}} <span class='box-count'  v-if="leftList.length>0">({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleLeft()"></i> </div>
+            <div class="title-mobile" @click="toggleLeft()">{{dragBoxOneTitle}} <span class='box-count'  v-if="leftList.length>0">({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> Tap & drop option here </div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
@@ -116,11 +127,11 @@
                 </div>
             </div>
             <div  class="list-group" v-show="leftList.length==0 && leftToggle" >
-                    <div class="empty-message">click and drop here</div>
+                    <div class="empty-message">Tap and drop option here</div>
             </div>
         </div>
         <div class="mobile-question-item">
-            <div class="title-mobile"> {{dragBoxTwoTitle}} <span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" @click="toggleRight()"></i> </div>
+            <div class="title-mobile" @click="toggleRight()"> {{dragBoxTwoTitle}} <span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'>Tap & drop option here</div>
             <div class="list-group" v-show="rightList.length>0 && rightToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
@@ -128,7 +139,7 @@
                 </div>
             </div>
             <div  class="list-group" v-show="rightList.length==0 && rightToggle" >
-                    <div class="empty-message">click and drop here</div>
+                    <div class="empty-message">Tap and drop option here</div>
             </div>
         </div>
     </div>
@@ -210,11 +221,19 @@ export default {
             return  this.leftList.some( el=>  el.validity==false) ||this.rightList.some( el=>  el.validity==false)  
         } ,
         answerTitle(){
-            return this.isErrorAvaiable? '<span class="fa-stack"><i class="fa fa-circle-o fa-stack-1x wrong-answer-icon "></i> <i class="fa fa-close fa-stack-1x "></i></span>  You are not correct' : '<span><i class="fa fa-check-circle-o wrong-answer-icon "></i> </span><span>You are correct</span>'
+            return this.isErrorAvaiable? '<span class="fa-stack"><i class="fa fa-circle-o fa-stack-1x wrong-answer-icon "></i> <i class="fa fa-close fa-stack-1x "></i></span>  This answer is incorrect' : '<span><i class="fa fa-check-circle-o wrong-answer-icon "></i> </span><span>This answer is correct</span>'
         }
   },
 
   methods: {
+    onChoose: function (/**Event*/evt) {
+        debugger
+		evt.oldIndex;  // element index within parent
+	},
+    onUnchoose: function(/**Event*/evt) {
+		// same properties as onEnd
+	},
+
     checkMove(){
         this.dragging =true;
     },
@@ -283,7 +302,6 @@ export default {
 
         questionDataApi.postData(payload, res => {
             if(res.status ==200){
-            console.log(res.data);
             this.leftList = res.data.drag_column_box_1;
             this.rightList = res.data.drag_column_box_2;
             this.answerDescription = res.data.answer_description;
@@ -419,6 +437,7 @@ export default {
             }
         }
         }
+       
      
         .list-group{
 
@@ -448,6 +467,7 @@ export default {
                 }
             }
            
+           
         }
        
     }
@@ -469,32 +489,37 @@ export default {
                 display: flex;
                 flex-wrap:wrap;
                 align-content: flex-start;
-                height: 300px;
+                min-height: 300px;
                 border-radius: 8px;
                 border: dashed 1px #b7b7b7;
                 background-color: #fff;
                 padding: 20px;
                 flex-direction: unset;
-               
-            .dragdrop-list-group-item{
-                padding: 10px;
-                border-radius: 4px;
-                margin: 5px;
-                font-family: "proxima-nova";
-                font-size: 14px;
-                height: fit-content;
-                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-                background: white;
-                cursor: grab;
-                .close-btn{
-                    cursor: default;
+                
+                .empty-message{
+                    margin: 100px auto;
+                    color: #808284;
                 }
+               
+                .dragdrop-list-group-item{
+                    padding: 10px;
+                    border-radius: 4px;
+                    margin: 5px;
+                    font-family: "proxima-nova";
+                    font-size: 14px;
+                    height: fit-content;
+                    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+                    background: white;
+                    cursor: grab;
+                    .close-btn{
+                        cursor: default;
+                    }
 
-            }
-            .error{
-              background-color:darkred;
-              color: white;
-            }
+                }
+                .error{
+                background-color:darkred;
+                color: white;
+                }
         }
         .box-count{
             padding: 0px 10px;
@@ -541,23 +566,23 @@ export default {
 
         .continuebtn {
             float: right;
-            box-shadow:inset 0px 0px 15px 3px #23395e;
             background-color:#104c97;
             border-radius:20px;
             display:inline-block;
             cursor:pointer;
             color:#ffffff;
             font-family: "proxima-nova";
-            font-size: 16px;
+            font-size: 1rem;
+            font-weight: 600;
             padding:10px 25px;
             text-decoration:none;
-            text-shadow:0px 1px 0px #263666;
             margin: 10px;
         }
        
         .disabled{
             background-color: #d9d9d9;
             text-shadow: none;
+            border-color: white;
             box-shadow : none;
         }
          .disabled :hover {
@@ -567,6 +592,9 @@ export default {
         .continuebtn:active {
             position:relative;
             top:1px;
+        }
+        .continuebtn:hover {
+            color:white !important;
         }
 
                 
