@@ -35,7 +35,7 @@
 
     <div class="question-sections">
         <div class="question-section-item">
-            <h4>{{dragBoxOneTitle}} <span class='box-count' v-if="leftList.length>0">({{leftList.length}})</span></h4>
+            <h4>{{dragBoxOneTitle}} <span class='box-count' >({{leftList.length}})</span></h4>
              <div  class="list-group" v-show="leftList.length==0 && dragging !=true" >
                         <div class="empty-message">Drop an option here</div>
                     </div>
@@ -59,7 +59,7 @@
         </div>
 
     <div class="question-section-item">
-      <h4>{{dragBoxTwoTitle}}<span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span> </h4>
+      <h4>{{dragBoxTwoTitle}}<span class='box-count'>({{rightList.length}})</span> </h4>
           <div  class="list-group" v-show="rightList.length==0 && dragging !=true" >
                         <div class="empty-message">Drop an option here</div>
                     </div>
@@ -119,7 +119,7 @@
     </div>
     <div class="question-sections" >
         <div class="mobile-question-item">
-            <div class="title-mobile" @click="toggleLeft()">{{dragBoxOneTitle}} <span class='box-count'  v-if="leftList.length>0">({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
+            <div class="title-mobile" @click="toggleLeft()">{{dragBoxOneTitle}} <span class='box-count'  >({{leftList.length}})</span>  <i class="fa" :class="leftToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsLeft()'> Tap & drop option here </div>
             <div class="list-group" v-show="leftList.length>0 && leftToggle">
                 <div  v-for="element in leftList" :key="element.keyword" >
@@ -131,7 +131,7 @@
             </div>
         </div>
         <div class="mobile-question-item">
-            <div class="title-mobile" @click="toggleRight()"> {{dragBoxTwoTitle}} <span class='box-count'  v-if="rightList.length>0">({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
+            <div class="title-mobile" @click="toggleRight()"> {{dragBoxTwoTitle}} <span class='box-count'>({{rightList.length}})</span>  <i class="fa" :class="rightToggle ? 'fa-angle-up' :'fa-angle-down'" ></i> </div>
             <div class="add-button"  v-if="selectedItems.length>0" @click='addItemsRight()'>Tap & drop option here</div>
             <div class="list-group" v-show="rightList.length>0 && rightToggle">
                 <div  v-for="element in rightList" :key="element.keyword" >
@@ -522,7 +522,7 @@ export default {
                 }
         }
         .box-count{
-            padding: 0px 10px;
+            padding: 0px 4px;
         }
         .list-group-drag{
               background-color: #f3f3f3
@@ -580,7 +580,8 @@ export default {
         }
        
         .disabled{
-            background-color: #d9d9d9;
+            // background-color: #d9d9d9;
+                opacity: 0.65;
             text-shadow: none;
             border-color: white;
             box-shadow : none;
