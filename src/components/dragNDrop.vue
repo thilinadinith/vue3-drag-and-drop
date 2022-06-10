@@ -8,6 +8,7 @@
                 :list="mainList"
                 group="answers"
                 @choose="checkMove"
+                @unchoose="onUnchoose"
                 @change="log"
                 @end="onEnd"
                 :disabled="drag"
@@ -23,7 +24,8 @@
             <div class="popper-section">
                 <Popper arrow
                 offsetDistance=0
-                offsetSkid=140
+                offsetSkid=0
+                placement="bottom-start"
                 :content="howItWorksDesktop">
                     <div><i class="fa fa-question-circle-o "></i> <span class="how-it-works"> How it works </span></div>
                 </Popper>
@@ -49,6 +51,7 @@
                 :disabled=drag
                 itemKey="name"
                 @choose="checkMove"
+                  @unchoose="onUnchoose"
                  @end="onEnd"
             >
                 <template #item="{ element, index }">
@@ -63,26 +66,27 @@
           <div  class="list-group" v-show="rightList.length==0 && dragging !=true" >
                         <div class="empty-message">Drop an option here</div>
                     </div>
-      <draggable
-        v-show="rightList.length!=0|| dragging ==true" 
-        class="list-group"
-        :class="dragging?'list-group-drag':''"
-        :list="rightList"
-        group="answers"
-        @change="log"
-         @end="onEnd"
-        :disabled=drag
-        @choose="checkMove"
-        itemKey="name">
-        <template #item="{ element, index }">
-          <div  :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
-        </template>
-      </draggable>
+            <draggable
+                v-show="rightList.length!=0|| dragging ==true" 
+                class="list-group"
+                :class="dragging?'list-group-drag':''"
+                :list="rightList"
+                group="answers"
+                @change="log"
+                @unchoose="onUnchoose"
+                @end="onEnd"
+                :disabled=drag
+                @choose="checkMove"
+                itemKey="name">
+                <template #item="{ element, index }">
+                <div  :class="element.validity ||element.validity ==undefined ?'dragdrop-list-group-item' : 'dragdrop-list-group-item error'">{{ element.keyword }} <i v-if="!validate" @click="deleteRightList(element)" class="close-btn fa fa-close"></i> </div>
+                </template>
+            </draggable>
     </div>
   </div>
     <div class="answer-section">
             <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
-            <div v-if="validate" class="answer-description">{{answerDescription}}</div>
+            <div v-if="validate && answerDescription!='' && answerDescription!=null" class="answer-description">{{answerDescription}}</div>
           <div><a  class="continuebtn btn btn-primary" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
         </div>
       
@@ -91,7 +95,7 @@
     <div class="main-selection">
       <div class="list-group">
              <div class="empty" v-if="mainList.length==0 && (leftList.length>0 || rightList.length>0)">You’ve done sorting all the options!</div>
-         <Carousel  v-if="sliderList.length!==0" :itemsToShow="1">
+         <Carousel  :class="mainList.length<=5?'less_items':''" v-if="sliderList.length!==0" :itemsToShow="1">
            
             <Slide v-for="(elements, index) in sliderList" :key="index">
             <div class="carousel__item" style="display:flex; flex-wrap:wrap;">
@@ -146,17 +150,17 @@
 
        <div class="answer-section">
             <div v-if="validate" :class=" !isErrorAvaiable ? 'answer-title' :'answer-title error'" v-html="answerTitle">  </div>
-            <div v-if="validate" class="answer-description">{{answerDescription}}</div>
-          <div class="check-answer_button"><a  class="continuebtn" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
+            <div v-if="validate && answerDescription!='' && answerDescription!=null" class="answer-description">{{answerDescription}}</div>
+          <div class="check-answer_button"><a  class="continuebtn btn btn-primary" @click="submit()" :class="(mainList.length>0)?'disabled':''" v-if="!validate"> Check Answer</a></div>
         </div>
 </div>
 </template>
 <script>
+import '../assets/icomoon.css'
 import 'vue3-carousel/dist/carousel.css';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import draggable from 'vuedraggable'
 import Popper from "vue3-popper";
-import dataJson from '../../data.json'
 import questionDataApi from '../services/QuestionsDataAPI'
 const questionId = document.querySelector("#question-id").value;
 const nextQuestionId = document.querySelector("#nextqid").value;
@@ -221,17 +225,19 @@ export default {
             return  this.leftList.some( el=>  el.validity==false) ||this.rightList.some( el=>  el.validity==false)  
         } ,
         answerTitle(){
-            return this.isErrorAvaiable? '<span class="fa-stack"><i class="fa fa-circle-o fa-stack-1x wrong-answer-icon "></i> <i class="fa fa-close fa-stack-1x "></i></span>  This answer is incorrect' : '<span><i class="fa fa-check-circle-o wrong-answer-icon "></i> </span><span>This answer is correct</span>'
+            return this.isErrorAvaiable? '<i class="icomoon-cancel-circle"></i>  This answer is incorrect.' : ' <i class="icomoon-cancel-circle"></i> You are correct! '
         }
   },
 
   methods: {
+      
     onChoose: function (/**Event*/evt) {
         debugger
 		evt.oldIndex;  // element index within parent
 	},
     onUnchoose: function(/**Event*/evt) {
 		// same properties as onEnd
+          this.dragging =false
 	},
 
     checkMove(){
@@ -704,7 +710,6 @@ export default {
      padding: 0px !important;
     .continuebtn {
             float: unset !important;
-            box-shadow:inset 0px 0px 15px 3px #23395e;
             background-color:#2e466e;
             border-radius:20px;
             cursor:pointer;
@@ -714,7 +719,7 @@ export default {
             padding:10px 25px;
             text-decoration:none;
             width: 100%;
-            text-shadow:0px 1px 0px #263666;
+            //text-shadow:0px 1px 0px #263666;
             margin :10px 0px !important;
 
         }
@@ -728,9 +733,15 @@ export default {
 .carousel__next--in-active {
   display: none;
 }
+.less_items{
+.carousel__pagination{
+    display: none !important;
+}
+}
 .carousel__pagination{
     padding: 0px;
 }
+
 .carousel{
     width: 100%;
 }
